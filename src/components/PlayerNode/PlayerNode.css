@@ -1,0 +1,84 @@
+/* Tactical Player Cards on Pitch */
+.player-card-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  transition: transform 0.2s ease;
+}
+
+@keyframes popCardSuccess {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  35% {
+    transform: translate(-50%, -50%) scale(1.25) rotate(-3deg);
+  }
+  65% {
+    transform: translate(-50%, -50%) scale(0.92) rotate(2deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+}
+
+.player-card-node.just-guessed {
+  animation: popCardSuccess 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+.player-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  box-sizing: border-box;
+}
+
+.player-card-node.unguessed .player-circle {
+  background-color: transparent;
+  border: 2.5px dashed rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.player-card-node.guessed .player-circle {
+  background-color: #ffffff;
+  border: 2.5px solid #000000;
+  color: #000000;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 2px 2.5px 0px #e0b849;
+}
+
+.player-card-node.revealed-missing .player-circle {
+  background-color: #fff0f0;
+  border: 2.5px solid var(--color-error);
+  color: var(--color-error);
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 2px 2.5px 0px #702e22;
+}
+
+.player-card-node .player-name {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+}

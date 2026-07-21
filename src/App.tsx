@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Trophy } from 'lucide-react';
 import HomePage from './pages/HomePage';
-import GamePage from './pages/GamePage';
+import GamePage from './pages/GamePage/GamePage';
 import ResultsPage from './pages/ResultsPage';
 import {
   EditionData,
@@ -201,12 +201,6 @@ export default function App() {
             navigateTo('results');
           }
         }, 1200);
-      } else {
-        setFeedback({
-          type: 'success',
-          text: `GOLAÇO! ${matchedPlayer.nome_oficial} adicionado.`,
-        });
-        setTimeout(() => setFeedback(null), 1500);
       }
     } else {
       const newErrors = errors + 1;

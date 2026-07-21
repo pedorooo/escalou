@@ -1,0 +1,176 @@
+/* GAME PAGE LAYOUT */
+.game-page-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.game-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.game-pitch-side {
+  width: 100%;
+}
+
+.game-input-side {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .game-main-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-5);
+    align-items: center;
+  }
+}
+
+/* Active Team Header Display */
+.stepper-team-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.stepper-team-flag {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  background-color: var(--color-primary-dark);
+  color: #FFFFFF;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.stepper-team-title-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepper-team-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  line-height: 1.1;
+}
+
+.stepper-team-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stepper-team-header svg {
+  display: block !important;
+  vertical-align: unset !important;
+}
+
+/* Compact Stats Control Bar (Lives | Skips | Timer) */
+.game-compact-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.control-bar-left-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.lives-balls-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-primary);
+}
+
+.life-ball,
+.skip-ball {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.life-ball.consumed {
+  opacity: 0.25;
+  color: #8C9993;
+}
+
+.control-bar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--color-border);
+}
+
+.skips-balls-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-accent);
+}
+
+.skip-ball.consumed {
+  opacity: 0.25;
+  color: #8C9993;
+}
+
+.timer-display-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timer-digits {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.timer-icon {
+  font-size: 18px;
+}
+
+.life-ball svg,
+.skip-ball svg,
+.timer-display-box svg {
+  display: block;
+}
+
+/* Feedback banner */
+.feedback-banner {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.feedback-banner.success {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-primary);
+}
+
+.feedback-banner.error {
+  background-color: #F8ECE9;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}

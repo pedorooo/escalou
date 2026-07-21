@@ -1,0 +1,109 @@
+/* Game Input & Side-by-Side Action Buttons */
+.game-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@keyframes inputShakeError {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-8px);
+  }
+  40%, 80% {
+    transform: translateX(8px);
+  }
+}
+
+.game-text-input {
+  width: 100%;
+  padding: var(--space-4);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+  outline: none;
+  text-transform: uppercase;
+}
+
+.game-text-input::placeholder {
+  color: #8C9993;
+}
+
+.game-text-input:focus {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg);
+}
+
+.game-text-input.error-flash {
+  border-color: var(--color-error);
+  animation: inputShakeError 0.38s ease-in-out;
+}
+
+.game-action-buttons-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.action-btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  border: none;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-btn-confirm svg,
+.action-btn-skip svg {
+  display: block;
+}
+
+.action-btn-confirm:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.action-btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-btn-skip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-btn-skip:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.action-btn-skip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

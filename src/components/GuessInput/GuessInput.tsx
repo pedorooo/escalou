@@ -1,5 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { Check, FastForward } from 'lucide-react';
+import './GuessInput.css';
 
 interface GuessInputProps {
   onGuess: (value: string) => void;
@@ -54,7 +55,7 @@ export default function GuessInput({
           disabled={disabled || skipsLeft <= 0}
         >
           <FastForward size={18} strokeWidth={2} style={{ marginRight: '6px' }} />
-          PULAR SELEÇÃO
+          PULAR
         </button>
       </div>
     </form>

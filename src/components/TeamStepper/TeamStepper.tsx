@@ -1,7 +1,8 @@
 import React from 'react';
 import { Check, FastForward } from 'lucide-react';
-import TeamFlag from './TeamFlag';
-import { Team, ProgressMap, TeamStatus } from '../types/game';
+import TeamFlag from '../TeamFlag';
+import { Team, ProgressMap, TeamStatus } from '../../types/game';
+import './TeamStepper.css';
 
 interface TeamStepperProps {
   teams: Team[];
@@ -18,19 +19,6 @@ export default function TeamStepper({
 
   return (
     <div className="segmented-stepper-wrapper">
-      {/* Top Active Team Display with SVG Flag */}
-      {currentTeam && (
-        <div className="stepper-team-header">
-          <TeamFlag code={currentTeam.bandeira} size={32} />
-          <div className="stepper-team-title-meta">
-            <h1 className="stepper-team-name">{currentTeam.nome.toUpperCase()} - 2026</h1>
-            <span className="stepper-team-subtitle">
-              {currentTeam.resultado_final || 'PARTICIPANTE 2026'}
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Segmented Progress Bar */}
       <div className="segmented-bar-track">
         {teams.map((team, idx) => {
