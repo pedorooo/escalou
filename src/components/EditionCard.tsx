@@ -28,9 +28,8 @@ export default function EditionCard({
 
   return (
     <div
-      className={`edition-card ${isFeatured ? 'featured' : ''} ${
-        isSelected ? 'selected' : ''
-      } ${!isActive ? 'disabled' : ''}`}
+      className={`edition-card ${isFeatured ? 'featured' : ''} ${isSelected ? 'selected' : ''
+        } ${!isActive ? 'disabled' : ''}`}
       onClick={handleClick}
     >
       {/* Background Stadium Image Overlay */}
@@ -39,13 +38,14 @@ export default function EditionCard({
       <div className="card-content-relative">
         <div className="card-title-row">
           <h3 className="card-title">{titleText}</h3>
-          <span className={`card-badge ${!isActive ? 'badge-soon' : ''}`}>
-            {isActive ? 'MVP Ativo' : 'Em breve'}
-          </span>
+          {!isActive && (
+            <span className="card-badge badge-soon">
+              Em Breve
+            </span>
+          )}
         </div>
 
         <p className="card-desc">{edition?.pais_sede || ''}</p>
-        <p className="card-subdesc">{edition?.descricao || ''}</p>
       </div>
     </div>
   );
