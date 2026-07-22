@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trophy } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import GamePage from './pages/GamePage/GamePage';
 import ResultsPage from './pages/ResultsPage';
+import Navbar from './components/Navbar/Navbar';
 import {
   EditionData,
   ProgressMap,
@@ -251,15 +251,8 @@ export default function App() {
 
   return (
     <>
-      {/* Top Navigation Bar - Only visible on Home page */}
-      {currentView === 'home' && (
-        <nav className="top-navbar">
-          <div className="nav-brand" onClick={() => navigateTo('home')}>
-            <Trophy size={20} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
-            ESCALOU
-          </div>
-        </nav>
-      )}
+      {/* Top Navigation Bar - Visible on all pages */}
+      <Navbar onBrandClick={() => navigateTo('home')} />
 
       {/* URL-based View Routing */}
       {currentView === 'home' && <HomePage onStartGame={handleStartGame} />}

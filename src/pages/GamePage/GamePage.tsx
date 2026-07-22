@@ -46,6 +46,13 @@ export default function GamePage({
     ? progressByTeam[currentTeam.id]?.acertos || []
     : [];
 
+  const totalCorrectGuesses = Object.values(progressByTeam).reduce(
+    (sum, teamProgress) => sum + (teamProgress?.acertos?.length || 0),
+    0
+  );
+
+  const totalPlayers = teams.reduce((sum, team) => sum + team.convocados.length, 0);
+
   const formatTime = (totalSec: number): string => {
     const mins = Math.floor(totalSec / 60);
     const secs = totalSec % 60;
@@ -82,7 +89,10 @@ export default function GamePage({
             <div className="stepper-team-header">
               <TeamFlag code={currentTeam.bandeira} size={32} />
               <div className="stepper-team-title-meta">
-                <h1 className="stepper-team-name">{currentTeam.nome.toUpperCase()} - 2026</h1>
+                <div className="stepper-team-title-row">
+                  <h1 className="stepper-team-name">{currentTeam.nome.toUpperCase()} - 2026</h1>
+                  <span className="stepper-team-counter">({totalCorrectGuesses}/{totalPlayers})</span>
+                </div>
                 <span className="stepper-team-subtitle">
                   {currentTeam.resultado_final || 'PARTICIPANTE 2026'}
                 </span>
