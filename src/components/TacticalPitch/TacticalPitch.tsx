@@ -10,7 +10,7 @@ interface TacticalPitchProps {
   revealAll: boolean;
 }
 
-function mapPlayersTo433(players: Player[]): { player: Player; roleAbbrev: string }[] {
+function mapPlayersTo433(players: Player[]): { player: Player & { x: number; y: number }; roleAbbrev: string }[] {
   const gkPool: Player[] = [];
   const lbPool: Player[] = [];
   const rbPool: Player[] = [];
@@ -21,16 +21,17 @@ function mapPlayersTo433(players: Player[]): { player: Player; roleAbbrev: strin
   const stPool: Player[] = [];
   const fallbackPool: Player[] = [];
 
-  players.forEach((p) => {
-    const pos = p.posicao.toLowerCase();
-    if (pos === 'goleiro') gkPool.push(p);
-    else if (pos === 'lateral-esquerdo') lbPool.push(p);
-    else if (pos === 'lateral-direito') rbPool.push(p);
-    else if (pos === 'zagueiro') cbPool.push(p);
-    else if (pos === 'volante' || pos === 'meia' || pos === 'meia-atacante') midPool.push(p);
-    else if (pos === 'ponta-esquerda') lwPool.push(p);
-    else if (pos === 'ponta-direita') rwPool.push(p);
-    else if (pos === 'atacante') stPool.push(p);
+  (players || []).forEach((p) => {
+    if (!p) return;
+    const pos = (p.position || '').toLowerCase();
+    if (pos === 'goleiro' || pos === 'goalkeeper' || pos === 'gk') gkPool.push(p);
+    else if (pos === 'lateral-esquerdo' || pos === 'left-back' || pos === 'lb') lbPool.push(p);
+    else if (pos === 'lateral-direito' || pos === 'right-back' || pos === 'rb') rbPool.push(p);
+    else if (pos === 'zagueiro' || pos === 'center-back' || pos === 'cb' || pos === 'defence' || pos === 'defender') cbPool.push(p);
+    else if (pos === 'volante' || pos === 'meia' || pos === 'meia-atacante' || pos === 'midfield' || pos === 'midfielder' || pos === 'cm' || pos === 'cam' || pos === 'cdm') midPool.push(p);
+    else if (pos === 'ponta-esquerda' || pos === 'left-winger' || pos === 'lw') lwPool.push(p);
+    else if (pos === 'ponta-direita' || pos === 'right-winger' || pos === 'rw') rwPool.push(p);
+    else if (pos === 'atacante' || pos === 'offence' || pos === 'striker' || pos === 'forward' || pos === 'st') stPool.push(p);
     else fallbackPool.push(p);
   });
 
@@ -61,12 +62,12 @@ function mapPlayersTo433(players: Player[]): { player: Player; roleAbbrev: strin
       return {
         player: {
           id: `dummy-${slot.roleAbbrev}`,
-          nome_oficial: 'Desconhecido',
-          posicao: slot.roleAbbrev,
-          numero: 0,
-          clube_epoca: '',
-          pos_x: slot.x,
-          pos_y: slot.y,
+          official_name: 'Desconhecido',
+          position: slot.roleAbbrev,
+          shirt_number: 0,
+          club_at_time: '',
+          x: slot.x,
+          y: slot.y,
           aliases: []
         },
         roleAbbrev: slot.roleAbbrev
@@ -75,8 +76,8 @@ function mapPlayersTo433(players: Player[]): { player: Player; roleAbbrev: strin
     return {
       player: {
         ...player,
-        pos_x: slot.x,
-        pos_y: slot.y
+        x: slot.x,
+        y: slot.y
       },
       roleAbbrev: slot.roleAbbrev
     };

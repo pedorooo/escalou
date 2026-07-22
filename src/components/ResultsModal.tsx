@@ -20,7 +20,7 @@ export default function ResultsModal({
   totalTeams,
   onRestart,
 }: ResultsModalProps) {
-  const isVictory = status === 'vitoria';
+  const isVictory = status === 'victory';
 
   const formatTime = (totalSec: number): string => {
     const mins = Math.floor(totalSec / 60);

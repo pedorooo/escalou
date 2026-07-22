@@ -3,7 +3,7 @@ import { Player } from '../../types/game';
 import './PlayerNode.css';
 
 interface PlayerNodeProps {
-  player: Player;
+  player: Player & { x?: number; y?: number };
   isGuessed: boolean;
   isMissing: boolean;
   isJustGuessed: boolean;
@@ -27,16 +27,16 @@ export default function PlayerNode({
     <div
       className={`player-card-node ${nodeClass}`}
       style={{
-        left: `${player.pos_x}%`,
-        top: `${player.pos_y}%`,
+        left: `${player.x ?? 50}%`,
+        top: `${player.y ?? 50}%`,
       }}
     >
       <div className="player-circle">
-        {isGuessed || isMissing ? player.numero : roleAbbreviation}
+        {isGuessed || isMissing ? player.shirt_number : roleAbbreviation}
       </div>
       {(isGuessed || isMissing) && (
         <div className="player-name">
-          {player.nome_oficial}
+          {player.official_name}
         </div>
       )}
     </div>

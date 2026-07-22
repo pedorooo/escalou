@@ -1,11 +1,14 @@
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 async function seed() {
   const connectionString =
     process.env.DATABASE_URL ||
-    'postgresql://escalou_user:escalou_pass@localhost:5432/escalou_db';
+    'postgresql://copa_user:copa_pass@localhost:5432/adivinhe_copa';
 
   console.log('Connecting to database:', connectionString);
 
@@ -14,6 +17,19 @@ async function seed() {
   try {
     const schemaPath = path.join(__dirname, '../db/schema.sql');
     const seedPath = path.join(__dirname, '../db/seeds/2026_seed.sql');
+
+    console.log('Resetting database schema (dropping old tables)...');
+    await pool.query(`
+      DROP TABLE IF EXISTS game_session_progress CASCADE;
+      DROP TABLE IF EXISTS game_sessions CASCADE;
+      DROP TABLE IF EXISTS accounts CASCADE;
+      DROP TABLE IF EXISTS users CASCADE;
+      DROP TABLE IF EXISTS player_aliases CASCADE;
+      DROP TABLE IF EXISTS players CASCADE;
+      DROP TABLE IF EXISTS teams CASCADE;
+      DROP TABLE IF EXISTS editions CASCADE;
+      DROP TABLE IF EXISTS tournaments CASCADE;
+    `);
 
     if (fs.existsSync(schemaPath)) {
       console.log('Executing db/schema.sql...');
@@ -27,9 +43,9 @@ async function seed() {
       await pool.query(seedSql);
     }
 
-    console.log('Database seed executed successfully!');
+    console.log('Database reset & seed executed successfully!');
   } catch (err) {
-    console.log('Seed runner output:', err.message);
+    console.error('Seed runner error:', err.message);
   } finally {
     await pool.end();
   }

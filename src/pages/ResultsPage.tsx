@@ -8,6 +8,7 @@ import {
   Team,
   Player,
 } from '../types/game';
+import { formatTime } from '../utils/formatters';
 
 interface ResultsPageProps {
   editionData: EditionData;
@@ -30,7 +31,7 @@ export default function ResultsPage({
   onPlayAgain,
   onGoHome,
 }: ResultsPageProps) {
-  const isVictory = gameStatus === 'vitoria';
+  const isVictory = gameStatus === 'victory';
 
   const [openTeamId, setOpenTeamId] = useState<string | null>(null);
 
@@ -38,25 +39,19 @@ export default function ResultsPage({
     setOpenTeamId((prev) => (prev === teamId ? null : teamId));
   };
 
-  const formatTime = (totalSec: number): string => {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
-
   const completedCount = Object.values(progressByTeam).filter(
-    (p) => p.status === 'concluida'
+    (p) => p.status === 'completed'
   ).length;
 
-  const totalTeams = editionData.selecoes.length;
+  const totalTeams = (editionData.teams || []).length;
 
-  const totalEditionPlayers = editionData.selecoes.reduce(
-    (acc, team) => acc + team.convocados.length,
+  const totalEditionPlayers = (editionData.teams || []).reduce(
+    (acc, team) => acc + (team.players?.length || 0),
     0
   );
 
   const totalGuessedPlayers = Object.values(progressByTeam).reduce(
-    (acc, prog) => acc + (prog.acertos?.length || 0),
+    (acc, prog) => acc + (prog.correct_guesses?.length || 0),
     0
   );
 
@@ -128,23 +123,23 @@ export default function ResultsPage({
         </div>
 
         <div className="accordion-list">
-          {editionData.selecoes.map((team: Team) => {
+          {(editionData.teams || []).map((team: Team) => {
             const teamProg = progressByTeam[team.id] || {
-              status: 'pendente',
-              acertos: [],
+              status: 'pending',
+              correct_guesses: [],
             };
             const status = teamProg.status;
-            const acertos = teamProg.acertos;
+            const correct_guesses = teamProg.correct_guesses || [];
 
             const isOpen = openTeamId === team.id;
 
             let statusSubText = 'PENDENTE';
             let statusClass = 'skipped';
 
-            if (status === 'concluida') {
+            if (status === 'completed') {
               statusSubText = 'CONCLUÍDO';
               statusClass = '';
-            } else if (status === 'pulada') {
+            } else if (status === 'skipped') {
               statusSubText = 'PULADO';
               statusClass = 'skipped';
             }
@@ -156,11 +151,11 @@ export default function ResultsPage({
                   onClick={() => toggleAccordion(team.id)}
                 >
                   <div className="accordion-team-meta">
-                    <TeamFlag code={team.bandeira} size={24} />
+                    <TeamFlag code={team.flag_code} size={24} />
                     <div>
-                      <div className="accordion-team-name">{team.nome} 2026</div>
+                      <div className="accordion-team-name">{team.name} 2026</div>
                       <div className={`accordion-status-sub ${statusClass}`}>
-                        {statusSubText} ({acertos.length}/{team.convocados.length})
+                        {statusSubText} ({correct_guesses.length}/{(team.players || []).length})
                       </div>
                     </div>
                   </div>
@@ -172,15 +167,15 @@ export default function ResultsPage({
                 {isOpen && (
                   <div className="accordion-body">
                     <div className="player-pills-grid">
-                      {team.convocados.map((player: Player) => {
-                        const wasHit = acertos.includes(player.id);
+                      {(team.players || []).map((player: Player) => {
+                        const wasHit = correct_guesses.includes(player.id);
                         return (
                           <div
                             key={player.id}
                             className={`player-pill ${wasHit ? 'hit' : 'missed'}`}
                           >
-                            <span>{player.nome_oficial}</span>
-                            <small style={{ opacity: 0.85 }}>({player.posicao})</small>
+                            <span>{player.official_name}</span>
+                            <small style={{ opacity: 0.85 }}>({player.position})</small>
                           </div>
                         );
                       })}

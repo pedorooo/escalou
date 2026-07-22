@@ -1,6 +1,14 @@
-import { EditionSummary } from '../types/game';
+import { EditionData, EditionSummary } from '../types/game';
+import { getEditionsFromDb, getEditionDetailsFromDb } from './supabaseService';
 
 export async function fetchEditionsList(): Promise<EditionSummary[]> {
+  // 1. Try Supabase if configured
+  const dbData = await getEditionsFromDb();
+  if (dbData && dbData.length > 0) {
+    return dbData;
+  }
+
+  // 2. Try REST API
   try {
     const res = await fetch('/api/editions');
     if (res.ok) {
@@ -13,70 +21,92 @@ export async function fetchEditionsList(): Promise<EditionSummary[]> {
     console.warn('Could not fetch editions from API, using fallback data:', err);
   }
 
-  // Fallback dataset with 7 historical World Cup editions
+  // 3. Fallback dataset
   return [
     {
       id: 'copa-2026',
-      ano: 2026,
-      nome: 'Copa do Mundo 2026',
-      pais_sede: 'Canadá, EUA e México',
-      descricao: 'Edição Atual • 6 Seleções Principais em Ordem Alfabética',
-      status: 'ativo',
+      tournament_id: 'fifa-world-cup',
+      year: 2026,
+      name: 'Copa do Mundo 2026',
+      host_country: 'Canadá, EUA e México',
+      description: 'Edição Atual • 6 Seleções Principais em Ordem Alfabética',
+      status: 'active',
       featured: true,
     },
     {
       id: 'copa-2022',
-      ano: 2022,
-      nome: 'Copa do Mundo 2022',
-      pais_sede: 'Catar',
-      descricao: '32 Seleções Convocadas • Campeão Argentina',
-      status: 'em_breve',
+      tournament_id: 'fifa-world-cup',
+      year: 2022,
+      name: 'Copa do Mundo 2022',
+      host_country: 'Catar',
+      description: '32 Seleções Convocadas • Campeão Argentina',
+      status: 'coming_soon',
       featured: false,
     },
     {
       id: 'copa-2018',
-      ano: 2018,
-      nome: 'Copa do Mundo 2018',
-      pais_sede: 'Rússia',
-      descricao: '32 Seleções Convocadas • Campeão França',
-      status: 'em_breve',
+      tournament_id: 'fifa-world-cup',
+      year: 2018,
+      name: 'Copa do Mundo 2018',
+      host_country: 'Rússia',
+      description: '32 Seleções Convocadas • Campeão França',
+      status: 'coming_soon',
       featured: false,
     },
     {
       id: 'copa-2014',
-      ano: 2014,
-      nome: 'Copa do Mundo 2014',
-      pais_sede: 'Brasil',
-      descricao: '32 Seleções Convocadas • Campeão Alemanha',
-      status: 'em_breve',
+      tournament_id: 'fifa-world-cup',
+      year: 2014,
+      name: 'Copa do Mundo 2014',
+      host_country: 'Brasil',
+      description: '32 Seleções Convocadas • Campeão Alemanha',
+      status: 'coming_soon',
       featured: false,
     },
     {
       id: 'copa-2010',
-      ano: 2010,
-      nome: 'Copa do Mundo 2010',
-      pais_sede: 'África do Sul',
-      descricao: '32 Seleções Convocadas • Campeão Espanha',
-      status: 'em_breve',
+      tournament_id: 'fifa-world-cup',
+      year: 2010,
+      name: 'Copa do Mundo 2010',
+      host_country: 'África do Sul',
+      description: '32 Seleções Convocadas • Campeão Espanha',
+      status: 'coming_soon',
       featured: false,
     },
     {
       id: 'copa-2006',
-      ano: 2006,
-      nome: 'Copa do Mundo 2006',
-      pais_sede: 'Alemanha',
-      descricao: '32 Seleções Convocadas • Campeão Itália',
-      status: 'em_breve',
+      tournament_id: 'fifa-world-cup',
+      year: 2006,
+      name: 'Copa do Mundo 2006',
+      host_country: 'Alemanha',
+      description: '32 Seleções Convocadas • Campeão Itália',
+      status: 'coming_soon',
       featured: false,
     },
     {
       id: 'copa-2002',
-      ano: 2002,
-      nome: 'Copa do Mundo 2002',
-      pais_sede: 'Coreia do Sul e Japão',
-      descricao: 'Pentacampeonato Brasileiro • 32 Seleções',
-      status: 'em_breve',
+      tournament_id: 'fifa-world-cup',
+      year: 2002,
+      name: 'Copa do Mundo 2002',
+      host_country: 'Coreia do Sul e Japão',
+      description: 'Pentacampeonato Brasileiro • 32 Seleções',
+      status: 'coming_soon',
       featured: false,
     },
   ];
+}
+
+export async function fetchEditionData(editionId: string = 'copa-2026'): Promise<EditionData> {
+  // 1. Try Supabase
+  const dbEdition = await getEditionDetailsFromDb(editionId);
+  if (dbEdition) {
+    return dbEdition;
+  }
+
+  // 2. Try REST API
+  const res = await fetch(`/api/editions/${editionId}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch edition data for ${editionId}: ${res.statusText}`);
+  }
+  return await res.json();
 }

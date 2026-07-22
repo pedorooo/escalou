@@ -12,6 +12,11 @@ import {
   FeedbackMessage,
   Team,
 } from '../../types/game';
+import {
+  calculateTotalCorrectGuesses,
+  calculateTotalPlayers,
+} from '../../services/gameService';
+import { formatTime } from '../../utils/formatters';
 
 interface GamePageProps {
   editionData: EditionData;
@@ -40,24 +45,14 @@ export default function GamePage({
   onGuess,
   onSkip,
 }: GamePageProps) {
-  const teams: Team[] = editionData.selecoes;
+  const teams: Team[] = editionData.teams || [];
   const currentTeam: Team | undefined = teams[currentIndex];
   const currentAcertos: string[] = currentTeam
-    ? progressByTeam[currentTeam.id]?.acertos || []
+    ? progressByTeam[currentTeam.id]?.correct_guesses || []
     : [];
 
-  const totalCorrectGuesses = Object.values(progressByTeam).reduce(
-    (sum, teamProgress) => sum + (teamProgress?.acertos?.length || 0),
-    0
-  );
-
-  const totalPlayers = teams.reduce((sum, team) => sum + team.convocados.length, 0);
-
-  const formatTime = (totalSec: number): string => {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
+  const totalCorrectGuesses = calculateTotalCorrectGuesses(progressByTeam);
+  const totalPlayers = calculateTotalPlayers(teams);
 
   // 3 lives / error balls
   const livesLeft = Math.max(0, 3 - errors);
@@ -76,9 +71,9 @@ export default function GamePage({
         <div className="game-pitch-side">
           {currentTeam && (
             <TacticalPitch
-              players={currentTeam.convocados}
+              players={currentTeam.players}
               guessedPlayerIds={currentAcertos}
-              revealAll={gameStatus !== 'em_andamento'}
+              revealAll={gameStatus !== 'in_progress'}
             />
           )}
         </div>
@@ -87,14 +82,14 @@ export default function GamePage({
           {/* Active Team Display with SVG Flag */}
           {currentTeam && (
             <div className="stepper-team-header">
-              <TeamFlag code={currentTeam.bandeira} size={32} />
+              <TeamFlag code={currentTeam.flag_code} size={32} />
               <div className="stepper-team-title-meta">
                 <div className="stepper-team-title-row">
-                  <h1 className="stepper-team-name">{currentTeam.nome.toUpperCase()} - 2026</h1>
+                  <h1 className="stepper-team-name">{currentTeam.name.toUpperCase()} - 2026</h1>
                   <span className="stepper-team-counter">({totalCorrectGuesses}/{totalPlayers})</span>
                 </div>
                 <span className="stepper-team-subtitle">
-                  {currentTeam.resultado_final || 'PARTICIPANTE 2026'}
+                  {currentTeam.final_result || 'PARTICIPANTE 2026'}
                 </span>
               </div>
             </div>
@@ -145,7 +140,7 @@ export default function GamePage({
           <GuessInput
             onGuess={onGuess}
             onSkip={onSkip}
-            disabled={gameStatus !== 'em_andamento'}
+            disabled={gameStatus !== 'in_progress'}
             isErrorFlash={isErrorFlash}
             skipsLeft={2 - skipsUsed}
           />
@@ -153,6 +148,4 @@ export default function GamePage({
       </div>
     </div>
   );
-
-
 }

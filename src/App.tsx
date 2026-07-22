@@ -10,29 +10,10 @@ import {
   PageView,
   FeedbackMessage,
   Team,
-  Player,
 } from './types/game';
-
-function normalizeText(str: string): string {
-  if (!str) return '';
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim();
-}
-
-function getViewFromPath(pathname: string): PageView {
-  if (pathname === '/jogo') return 'game';
-  if (pathname === '/resultados') return 'results';
-  return 'home';
-}
-
-function getPathFromView(view: PageView): string {
-  if (view === 'game') return '/jogo';
-  if (view === 'results') return '/resultados';
-  return '/';
-}
+import { fetchEditionData } from './services/editionsService';
+import { getViewFromPath, getPathFromView } from './services/routerService';
+import { findMatchingPlayer, initProgressMap } from './services/gameService';
 
 export default function App() {
   const [editionData, setEditionData] = useState<EditionData | null>(null);
@@ -64,7 +45,7 @@ export default function App() {
   const [progressByTeam, setProgressByTeam] = useState<ProgressMap>({});
   const [errors, setErrors] = useState<number>(0);
   const [skipsUsed, setSkipsUsed] = useState<number>(0);
-  const [gameStatus, setGameStatus] = useState<GameStatus>('em_andamento');
+  const [gameStatus, setGameStatus] = useState<GameStatus>('in_progress');
   const [seconds, setSeconds] = useState<number>(0);
 
   // UI Feedback state
@@ -73,14 +54,13 @@ export default function App() {
 
   const timerRef = useRef<NodeJS.Timeout | number | null>(null);
 
-  // Load Copa 2026 Data
+  // Load Edition Data via Service
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch('/api/editions/copa-2026');
-        const data: EditionData = await res.json();
+        const data = await fetchEditionData('copa-2026');
         setEditionData(data);
-        initProgress(data);
+        setProgressByTeam(initProgressMap(data.teams || []));
       } catch (err) {
         console.error('Failed to load edition data:', err);
       } finally {
@@ -90,22 +70,11 @@ export default function App() {
     loadData();
   }, []);
 
-  const initProgress = (data: EditionData) => {
-    const initialProgress: ProgressMap = {};
-    data.selecoes.forEach((team) => {
-      initialProgress[team.id] = { status: 'pendente', acertos: [] };
-    });
-    if (data.selecoes.length > 0) {
-      initialProgress[data.selecoes[0].id].status = 'em_andamento';
-    }
-    setProgressByTeam(initialProgress);
-  };
-
   // Timer Tick
   useEffect(() => {
     if (
       currentView === 'game' &&
-      gameStatus === 'em_andamento' &&
+      gameStatus === 'in_progress' &&
       !loading &&
       editionData
     ) {
@@ -128,10 +97,10 @@ export default function App() {
     );
   }
 
-  const teams: Team[] = editionData.selecoes;
+  const teams: Team[] = editionData.teams || [];
   const currentTeam: Team | undefined = teams[currentIndex];
   const currentAcertos: string[] = currentTeam
-    ? progressByTeam[currentTeam.id]?.acertos || []
+    ? progressByTeam[currentTeam.id]?.correct_guesses || []
     : [];
 
   const handleStartGame = () => {
@@ -144,24 +113,16 @@ export default function App() {
     setErrors(0);
     setSkipsUsed(0);
     setSeconds(0);
-    setGameStatus('em_andamento');
+    setGameStatus('in_progress');
     setFeedback(null);
-    initProgress(editionData);
+    setProgressByTeam(initProgressMap(editionData.teams || []));
   };
 
-  // Submit player guess
+  // Submit player guess using GameService
   const handleGuess = (inputText: string) => {
-    if (gameStatus !== 'em_andamento' || !currentTeam) return;
+    if (gameStatus !== 'in_progress' || !currentTeam) return;
 
-    const normalizedInput = normalizeText(inputText);
-
-    const matchedPlayer = currentTeam.convocados.find((player: Player) => {
-      const matchOfficial = normalizeText(player.nome_oficial) === normalizedInput;
-      const matchAlias = player.aliases.some(
-        (alias) => normalizeText(alias) === normalizedInput
-      );
-      return matchOfficial || matchAlias;
-    });
+    const matchedPlayer = findMatchingPlayer(inputText, currentTeam.players || []);
 
     if (matchedPlayer) {
       if (currentAcertos.includes(matchedPlayer.id)) {
@@ -171,20 +132,20 @@ export default function App() {
       }
 
       const updatedAcertos = [...currentAcertos, matchedPlayer.id];
-      const isTeamComplete = updatedAcertos.length >= currentTeam.convocados.length;
+      const isTeamComplete = updatedAcertos.length >= (currentTeam.players || []).length;
 
       setProgressByTeam((prev) => ({
         ...prev,
         [currentTeam.id]: {
-          status: isTeamComplete ? 'concluida' : 'em_andamento',
-          acertos: updatedAcertos,
+          status: isTeamComplete ? 'completed' : 'in_progress',
+          correct_guesses: updatedAcertos,
         },
       }));
 
       if (isTeamComplete) {
         setFeedback({
           type: 'success',
-          text: `Seleção do ${currentTeam.nome} concluída!`,
+          text: `Seleção do ${currentTeam.name} concluída!`,
         });
 
         setTimeout(() => {
@@ -194,10 +155,10 @@ export default function App() {
             setCurrentIndex((prev) => prev + 1);
             setProgressByTeam((prev) => ({
               ...prev,
-              [nextTeamId]: { ...prev[nextTeamId], status: 'em_andamento' },
+              [nextTeamId]: { ...prev[nextTeamId], status: 'in_progress' },
             }));
           } else {
-            setGameStatus('vitoria');
+            setGameStatus('victory');
             navigateTo('results');
           }
         }, 1200);
@@ -212,7 +173,7 @@ export default function App() {
       setTimeout(() => setFeedback(null), 1800);
 
       if (newErrors >= 3) {
-        setGameStatus('derrota');
+        setGameStatus('defeat');
         setTimeout(() => {
           navigateTo('results');
         }, 1000);
@@ -222,14 +183,14 @@ export default function App() {
 
   // Skip team logic
   const handleSkip = () => {
-    if (skipsUsed >= 2 || gameStatus !== 'em_andamento' || !currentTeam) return;
+    if (skipsUsed >= 2 || gameStatus !== 'in_progress' || !currentTeam) return;
 
     const newSkips = skipsUsed + 1;
     setSkipsUsed(newSkips);
 
     setProgressByTeam((prev) => ({
       ...prev,
-      [currentTeam.id]: { ...prev[currentTeam.id], status: 'pulada' },
+      [currentTeam.id]: { ...prev[currentTeam.id], status: 'skipped' },
     }));
 
     if (currentIndex + 1 < teams.length) {
@@ -237,14 +198,14 @@ export default function App() {
       setCurrentIndex((prev) => prev + 1);
       setProgressByTeam((prev) => ({
         ...prev,
-        [nextTeamId]: { ...prev[nextTeamId], status: 'em_andamento' },
+        [nextTeamId]: { ...prev[nextTeamId], status: 'in_progress' },
       }));
     } else {
       const completedCount = Object.values(progressByTeam).filter(
-        (p) => p.status === 'concluida'
+        (p) => p.status === 'completed'
       ).length;
 
-      setGameStatus(completedCount > 0 ? 'vitoria' : 'derrota');
+      setGameStatus(completedCount > 0 ? 'victory' : 'defeat');
       navigateTo('results');
     }
   };

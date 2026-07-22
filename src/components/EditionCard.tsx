@@ -14,10 +14,10 @@ export default function EditionCard({
   isFeatured,
   onSelect,
 }: EditionCardProps) {
-  const isActive = edition?.status === 'ativo';
+  const isActive = edition?.status === 'active';
   const titleText = (
-    edition?.nome ||
-    (edition?.ano ? `Copa do Mundo ${edition.ano}` : 'Copa do Mundo')
+    edition?.name ||
+    (edition?.year ? `Copa do Mundo ${edition.year}` : 'Copa do Mundo')
   ).toUpperCase();
 
   const handleClick = () => {
@@ -45,7 +45,7 @@ export default function EditionCard({
           )}
         </div>
 
-        <p className="card-desc">{edition?.pais_sede || ''}</p>
+        <p className="card-desc">{edition?.host_country || ''}</p>
       </div>
     </div>
   );
