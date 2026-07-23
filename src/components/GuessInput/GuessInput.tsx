@@ -18,12 +18,20 @@ export default function GuessInput({
   skipsLeft,
 }: GuessInputProps) {
   const [value, setValue] = useState<string>('');
+  const [isSkipping, setIsSkipping] = useState<boolean>(false);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!value.trim() || disabled) return;
     onGuess(value.trim());
     setValue('');
+  };
+
+  const handleSkipClick = () => {
+    if (disabled || skipsLeft <= 0 || isSkipping) return;
+    setIsSkipping(true);
+    onSkip();
+    setTimeout(() => setIsSkipping(false), 550);
   };
 
   return (
@@ -50,11 +58,16 @@ export default function GuessInput({
 
         <button
           type="button"
-          onClick={onSkip}
-          className="action-btn-skip"
+          onClick={handleSkipClick}
+          className={`action-btn-skip ${isSkipping ? 'is-animating' : ''}`}
           disabled={disabled || skipsLeft <= 0}
         >
-          <FastForward size={18} strokeWidth={2} style={{ marginRight: '6px' }} />
+          <FastForward
+            size={18}
+            strokeWidth={2}
+            className={`skip-btn-icon ${isSkipping ? 'skip-spin' : ''}`}
+            style={{ marginRight: '6px' }}
+          />
           PULAR
         </button>
       </div>

@@ -99,16 +99,22 @@ export default function GamePage({
           <div className="game-compact-control-bar">
             <div className="control-bar-left-group">
               {/* 3 Lives Indicators */}
-              <div className="lives-balls-group">
-                {[0, 1, 2].map((idx) => (
-                  <span
-                    key={idx}
-                    className={`life-ball ${idx < livesLeft ? 'active' : 'consumed'}`}
-                    title={idx < livesLeft ? 'Vida disponível' : 'Erro cometido'}
-                  >
-                    <Heart size={20} strokeWidth={2.5} />
-                  </span>
-                ))}
+              <div className={`lives-balls-group ${isErrorFlash ? 'has-error' : ''}`}>
+                {[0, 1, 2].map((idx) => {
+                  const isConsumed = idx >= livesLeft;
+                  const isJustLost = isErrorFlash && idx === livesLeft;
+
+                  return (
+                    <span
+                      key={idx}
+                      className={`life-ball ${isConsumed ? 'consumed' : 'active'} ${isJustLost ? 'heart-losing' : ''
+                        }`}
+                      title={!isConsumed ? 'Vida disponível' : 'Erro cometido'}
+                    >
+                      <Heart size={20} strokeWidth={2.5} />
+                    </span>
+                  );
+                })}
               </div>
 
               <div className="control-bar-divider" />
@@ -117,11 +123,13 @@ export default function GamePage({
               <div className="skips-balls-group">
                 {[0, 1].map((idx) => {
                   const skipsLeft = 2 - skipsUsed;
+                  const isConsumed = idx >= skipsLeft;
+
                   return (
                     <span
                       key={idx}
-                      className={`skip-ball ${idx < skipsLeft ? 'active' : 'consumed'}`}
-                      title={idx < skipsLeft ? 'Pulo disponível' : 'Pulo utilizado'}
+                      className={`skip-ball ${isConsumed ? 'consumed' : 'active'}`}
+                      title={!isConsumed ? 'Pulo disponível' : 'Pulo utilizado'}
                     >
                       <RotateCcw size={18} strokeWidth={2.5} />
                     </span>

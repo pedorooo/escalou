@@ -1,27 +1,50 @@
 .segmented-stepper-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 12px 16px;
+  padding: 16px 12px 12px 12px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .segmented-bar-track {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   width: 100%;
-  margin-top: 14px;
   overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
+  overflow-y: visible;
+  padding-top: 18px;
+  padding-bottom: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar for Stepper Track */
+.segmented-bar-track::-webkit-scrollbar {
+  height: 5px;
+}
+
+.segmented-bar-track::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 3px;
+}
+
+.segmented-bar-track::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.segmented-bar-track::-webkit-scrollbar-thumb:hover {
+  background: #A0ABA4;
 }
 
 .segmented-item {
-  flex: 1 0 20px;
-  min-width: 18px;
+  flex: 0 0 auto;
+  min-width: 48px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,55 +57,51 @@
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
   background-color: #E6B800;
   color: #1B1F1D;
-  padding: 1px 6px;
+  padding: 2px 6px;
   border-radius: var(--radius-sm);
   white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(230, 184, 0, 0.4);
+  z-index: 2;
 }
 
 .seg-bar-segment {
   width: 100%;
-  height: 28px;
+  height: 34px;
   background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
+  padding: 0 6px;
+  transition: all 0.2s ease;
 }
 
 .segmented-item.concluida .seg-bar-segment {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary-dark);
+  background-color: #1E4620;
+  border-color: #2E6B32;
   color: #FFFFFF;
 }
 
 .segmented-item.atual .seg-bar-segment {
   border-color: var(--color-accent);
-  background-color: var(--color-primary-light);
+  background-color: rgba(230, 184, 0, 0.12);
+  box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.25);
 }
 
 .segmented-item.pulada .seg-bar-segment {
-  background-color: var(--color-bg-secondary);
-  color: #717D76;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: var(--color-border);
+  color: #8C9690;
+  opacity: 0.75;
 }
 
-.seg-icon {
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.seg-team-code {
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.seg-bar-segment svg {
-  display: block !important;
-  vertical-align: unset !important;
+.seg-status-icon {
+  flex-shrink: 0;
 }

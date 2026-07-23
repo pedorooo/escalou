@@ -38,6 +38,7 @@ export interface Player {
   shirt_number: number;
   club_at_time: string;
   image_url?: string;
+  in_starting_eleven?: boolean;
   aliases: string[];
 }
 

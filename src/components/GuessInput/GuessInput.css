@@ -82,6 +82,22 @@
   cursor: not-allowed;
 }
 
+@keyframes skipIconSlideSpin {
+  0% {
+    transform: translateX(0) scale(1) rotate(0deg);
+  }
+  30% {
+    transform: translateX(6px) scale(1.3) rotate(15deg);
+    color: var(--color-accent);
+  }
+  70% {
+    transform: translateX(10px) scale(0.9) rotate(360deg);
+  }
+  100% {
+    transform: translateX(0) scale(1) rotate(360deg);
+  }
+}
+
 .action-btn-skip {
   display: inline-flex;
   align-items: center;
@@ -97,6 +113,22 @@
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.action-btn-skip.is-animating {
+  border-color: var(--color-accent);
+  background-color: rgba(230, 184, 0, 0.12);
+  transform: scale(0.96);
+}
+
+.skip-btn-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.skip-btn-icon.skip-spin {
+  animation: skipIconSlideSpin 0.55s ease-in-out forwards;
 }
 
 .action-btn-skip:hover {

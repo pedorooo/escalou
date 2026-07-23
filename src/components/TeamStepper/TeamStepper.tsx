@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Check, FastForward } from 'lucide-react';
 import TeamFlag from '../TeamFlag';
 import { Team, ProgressMap, TeamStatus } from '../../types/game';
@@ -15,18 +15,29 @@ export default function TeamStepper({
   currentIndex,
   progressByTeam,
 }: TeamStepperProps) {
-  const currentTeam = teams[currentIndex];
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll active team segment into center view when currentIndex changes
+  useEffect(() => {
+    if (trackRef.current && trackRef.current.children[currentIndex]) {
+      const activeElement = trackRef.current.children[currentIndex] as HTMLElement;
+      activeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [currentIndex]);
 
   return (
     <div className="segmented-stepper-wrapper">
-      {/* Segmented Progress Bar */}
-      <div className="segmented-bar-track">
+      {/* Segmented Progress Bar Track */}
+      <div className="segmented-bar-track" ref={trackRef}>
         {teams.map((team, idx) => {
           const status: TeamStatus = progressByTeam[team.id]?.status || 'pending';
           const isCurrent = idx === currentIndex;
 
           let segClass = 'pendente';
-
           if (status === 'completed') {
             segClass = 'concluida';
           } else if (status === 'skipped') {
@@ -39,9 +50,9 @@ export default function TeamStepper({
             <div key={team.id} className={`segmented-item ${segClass}`}>
               {isCurrent && <span className="seg-badge-atual">ATUAL</span>}
               <div className="seg-bar-segment">
-                {status === 'completed' && <Check size={12} strokeWidth={3} />}
-                {status === 'skipped' && <FastForward size={12} strokeWidth={2.5} />}
-                <TeamFlag code={team.flag_code} size={16} />
+                {status === 'completed' && <Check size={14} strokeWidth={3} className="seg-status-icon" />}
+                {status === 'skipped' && <FastForward size={14} strokeWidth={2.5} className="seg-status-icon" />}
+                <TeamFlag code={team.flag_code} size={20} />
               </div>
             </div>
           );

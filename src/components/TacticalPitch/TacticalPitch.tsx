@@ -21,7 +21,11 @@ function mapPlayersTo433(players: Player[]): { player: Player & { x: number; y: 
   const stPool: Player[] = [];
   const fallbackPool: Player[] = [];
 
-  (players || []).forEach((p) => {
+  const startingPlayers = (players || []).some((p) => p.in_starting_eleven)
+    ? (players || []).filter((p) => p.in_starting_eleven)
+    : (players || []).slice(0, 11);
+
+  startingPlayers.forEach((p) => {
     if (!p) return;
     const pos = (p.position || '').toLowerCase();
     if (pos === 'goleiro' || pos === 'goalkeeper' || pos === 'gk') gkPool.push(p);

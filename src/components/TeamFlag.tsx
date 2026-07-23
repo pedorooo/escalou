@@ -6,101 +6,112 @@ interface TeamFlagProps {
   size?: number;
 }
 
+const FIFA_TO_ISO2: Record<string, string> = {
+  alg: 'dz',
+  dza: 'dz',
+  arg: 'ar',
+  aus: 'au',
+  aut: 'at',
+  bel: 'be',
+  bra: 'br',
+  can: 'ca',
+  chi: 'cl',
+  col: 'co',
+  crc: 'cr',
+  cro: 'hr',
+  cze: 'cz',
+  den: 'dk',
+  ecu: 'ec',
+  egy: 'eg',
+  eng: 'gb-eng',
+  esp: 'es',
+  fra: 'fr',
+  ger: 'de',
+  deu: 'de',
+  gha: 'gh',
+  gre: 'gr',
+  hai: 'ht',
+  hon: 'hn',
+  hun: 'hu',
+  irn: 'ir',
+  irq: 'iq',
+  isl: 'is',
+  ita: 'it',
+  civ: 'ci',
+  jam: 'jm',
+  jpn: 'jp',
+  jor: 'jo',
+  kor: 'kr',
+  ksa: 'sa',
+  mar: 'ma',
+  mex: 'mx',
+  ned: 'nl',
+  nga: 'ng',
+  nor: 'no',
+  nzl: 'nz',
+  pan: 'pa',
+  par: 'py',
+  pry: 'py',
+  per: 'pe',
+  pol: 'pl',
+  por: 'pt',
+  qat: 'qa',
+  rom: 'ro',
+  rus: 'ru',
+  sco: 'gb-sct',
+  sen: 'sn',
+  rsa: 'za',
+  srb: 'rs',
+  sui: 'ch',
+  swe: 'se',
+  tun: 'tn',
+  tur: 'tr',
+  ukr: 'ua',
+  uru: 'uy',
+  ury: 'uy',
+  usa: 'us',
+  uzb: 'uz',
+  wal: 'gb-wls',
+  cur: 'cw',
+};
+
 export default function TeamFlag({ code, className = '', size = 20 }: TeamFlagProps) {
   const normalizedCode = (code || '').toLowerCase();
+  const iso2 = FIFA_TO_ISO2[normalizedCode] || (normalizedCode.length === 2 ? normalizedCode : null);
 
-  switch (normalizedCode) {
-    case 'br':
-      return (
-        <svg
-          width={size}
-          height={(size * 3) / 4}
-          viewBox="0 0 20 14"
-          className={className}
-          style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }}
-        >
-          <rect width="20" height="14" fill="#009B3A" />
-          <polygon points="10,2 18,7 10,12 2,7" fill="#FEDF00" />
-          <circle cx="10" cy="7" r="3" fill="#002776" />
-        </svg>
-      );
-    case 'de':
-      return (
-        <svg
-          width={size}
-          height={(size * 3) / 4}
-          viewBox="0 0 20 14"
-          className={className}
-          style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }}
-        >
-          <rect width="20" height="4.66" y="0" fill="#000000" />
-          <rect width="20" height="4.66" y="4.66" fill="#DD0000" />
-          <rect width="20" height="4.66" y="9.33" fill="#FFCC00" />
-        </svg>
-      );
-    case 'ar':
-      return (
-        <svg
-          width={size}
-          height={(size * 3) / 4}
-          viewBox="0 0 20 14"
-          className={className}
-          style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }}
-        >
-          <rect width="20" height="4.66" y="0" fill="#74ACDF" />
-          <rect width="20" height="4.66" y="4.66" fill="#FFFFFF" />
-          <rect width="20" height="4.66" y="9.33" fill="#74ACDF" />
-          <circle cx="10" cy="7" r="1.5" fill="#F6B40E" />
-        </svg>
-      );
-    case 'es':
-      return (
-        <svg
-          width={size}
-          height={(size * 3) / 4}
-          viewBox="0 0 20 14"
-          className={className}
-          style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }}
-        >
-          <rect width="20" height="3.5" y="0" fill="#AA151B" />
-          <rect width="20" height="7" y="3.5" fill="#F1BF00" />
-          <rect width="20" height="3.5" y="10.5" fill="#AA151B" />
-        </svg>
-      );
-    case 'fr':
-      return (
-        <svg
-          width={size}
-          height={(size * 3) / 4}
-          viewBox="0 0 20 14"
-          className={className}
-          style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }}
-        >
-          <rect width="6.66" height="14" x="0" fill="#002395" />
-          <rect width="6.66" height="14" x="6.66" fill="#FFFFFF" />
-          <rect width="6.68" height="14" x="13.32" fill="#ED2939" />
-        </svg>
-      );
-    case 'gb-eng':
-    case 'england':
-      return (
-        <svg
-          width={size}
-          height={(size * 3) / 4}
-          viewBox="0 0 20 14"
-          className={className}
-          style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }}
-        >
-          <rect width="20" height="14" fill="#FFFFFF" />
-          <rect width="20" height="3" y="5.5" fill="#CE1124" />
-          <rect width="3" height="14" x="8.5" fill="#CE1124" />
-        </svg>
-      );
-    default:
-      return (
-        <span className="team-flag-code-fallback" style={{ fontSize: '11px', fontWeight: 700 }}>
-          {code.toUpperCase()}
-        </span>
-      );
+  if (iso2) {
+    return (
+      <img
+        src={`https://flagcdn.com/w40/${iso2}.png`}
+        alt={code}
+        width={size}
+        height={Math.round((size * 3) / 4)}
+        className={`team-flag-img ${className}`}
+        style={{
+          borderRadius: '2px',
+          objectFit: 'cover',
+          display: 'inline-block',
+          verticalAlign: 'middle',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
+        }}
+        onError={(e) => {
+          // If flag image fails to load, fallback to text code
+          const target = e.currentTarget;
+          target.style.display = 'none';
+          if (target.nextElementSibling) {
+            (target.nextElementSibling as HTMLElement).style.display = 'inline-block';
+          }
+        }}
+      />
+    );
   }
+
+  return (
+    <span
+      className="team-flag-code-fallback"
+      style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }}
+    >
+      {code ? code.toUpperCase() : '??'}
+    </span>
+  );
 }

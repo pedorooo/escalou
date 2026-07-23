@@ -251,7 +251,7 @@ app.get('/api/editions/:editionId', async (req, res) => {
       const teams = [];
       for (const team of teamsRes.rows) {
         const playersRes = await pool.query(
-          'SELECT * FROM players WHERE team_id = $1 AND in_starting_eleven = TRUE',
+          'SELECT * FROM players WHERE team_id = $1 ORDER BY shirt_number ASC',
           [team.id]
         );
 
@@ -268,6 +268,7 @@ app.get('/api/editions/:editionId', async (req, res) => {
             shirt_number: player.shirt_number,
             club_at_time: player.club_at_time,
             image_url: player.image_url || null,
+            in_starting_eleven: player.in_starting_eleven,
             aliases: aliasesRes.rows.map((r) => r.alias),
           });
         }
